@@ -34,6 +34,49 @@ public class SamsArrayList<E> extends AbstractList<E> implements List<E>, Random
         return true;
     }
 
+    public void add(int index, E element) {
+        if(index < 0 || index > size)
+            throw new IndexOutOfBoundsException();
+        if(size +1 == elementData.length)
+            expandArray();
+        System.arraycopy(elementData, index, elementData, index + 1, size - index);
+        elementData[index] = element;
+    }
+
+    public boolean addAll(Collection<? extends E> c) {
+        c.forEach(this::add);
+        return true;
+    }
+
+    @SuppressWarnings("unchecked")
+    public boolean addAll(int index, Collection<? extends E> c) {
+        if(index < 0 || index > size)
+            throw new IndexOutOfBoundsException();
+        Object[] cArray = c.toArray();
+        int sizeAddition = cArray.length;
+        int objectsMoved = size - index;
+        if(objectsMoved > 0)
+            System.arraycopy(elementData, index, elementData, index + sizeAddition, objectsMoved);
+        System.arraycopy(cArray, 0, elementData, index, sizeAddition);
+        size += sizeAddition;
+        return true;
+    }
+
+    public void clear() {
+        elementData = new Object[]{};
+    }
+
+    public Object clone() {
+        try {
+            SamsArrayList<?> clone = (SamsArrayList<?>)super.clone();
+            clone.elementData = Arrays.copyOf(elementData, size);
+            return clone;
+        } catch(CloneNotSupportedException ignored) {
+            throw new InternalError(ignored);
+            //Internal error is the only way to not return anything after try catch oof
+        }
+    }
+
     @SuppressWarnings("unchecked")
     public E get(int index) {
         if(index < 0 || index >= size) {
@@ -83,6 +126,10 @@ public class SamsArrayList<E> extends AbstractList<E> implements List<E>, Random
         elementData = Arrays.copyOf(elementData, newSize);
     }
 
+    public void ensureCapacity(int minCapacity) {
+        elementData = Arrays.copyOf(elementData, minCapacity);
+    }
+
     public int indexOf(Object o) {
         if (o == null) {
             for (int i = 0; i < size; i++)
@@ -105,7 +152,6 @@ public class SamsArrayList<E> extends AbstractList<E> implements List<E>, Random
         for(int i = fromIndex; i < toIndex; i++) {
             returnedList.add((E) elementData[i]);
         }
-        assert returnedList != null;
         return returnedList;
     }
 
@@ -119,9 +165,56 @@ public class SamsArrayList<E> extends AbstractList<E> implements List<E>, Random
             return (T[]) Arrays.copyOf(elementData, size, a.getClass());
         }
         System.arraycopy(elementData, 0, a, 0, size);
+        if(a.length > size)
+            a[size] = null;
+        return a;
     }
 
     public void trimToSize() {
         elementData = Arrays.copyOf(elementData, size());
     }
+
+    public boolean isEmpty() {
+        return size == 0;
+    }
+
+    public int lastIndexOf(Object o) {
+        int v = -1;
+        int s = size;
+        for(int i = 0; i < s; i++)
+            if(elementData[i].equals(o))v=i;
+        return v;
+    }
+
+    public boolean removeAll(Collection<?> c) {
+        boolean b = false;
+        for(int i = 0; i < size(); i++) {
+            if(c.contains(elementData[i])) {
+                fastRemove(i);
+                b = true;
+            }
+        }
+        return b;
+    }
+
+    public boolean retainAll(Collection<?> c) {
+        boolean b = false;
+        for(int i = 0; i < size(); i++) {
+            if(!c.contains(elementData[i])) {
+                fastRemove(i);
+                b = true;
+            }
+        }
+        return b;
+    }
+
+    public E set(int index, E element)  {
+        if(index >= size || index < 0)
+            throw new IndexOutOfBoundsException();
+        elementData[index] = element;
+        return element;
+    }
+
+
+
 }
