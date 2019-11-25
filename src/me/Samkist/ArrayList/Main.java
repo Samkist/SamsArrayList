@@ -6,16 +6,11 @@ public class Main {
     public static void main(String[] args) {
         SamsArrayList<String> names = new SamsArrayList<>();
         //Test Array Here
-        names.add("Sam");
-        names.add("Sam");
-        names.add("Maia");
-        ArrayList<String> nm = new ArrayList<>();
-        nm.add("Mike");
-        nm.add("Mr. Geary");
-        nm.add("Sam");
-        names.addAll(0, nm);
-        names.add("Sam");
-        System.out.println(names.removeAll(nm));
-        names.forEach(System.out::println);
+        names.add("Ben");
+        names.add("Noah");
+        names.add(1, "Jerry");
+        System.out.println("Index Add Section");
+        for(int i = 0; i < names.size(); i++)
+            System.out.println(names.get(i));
     }
 }

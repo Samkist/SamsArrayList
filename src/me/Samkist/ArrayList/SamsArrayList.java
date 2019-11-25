@@ -37,10 +37,29 @@ public class SamsArrayList<E> extends AbstractList<E> implements List<E>, Random
     public void add(int index, E element) {
         if(index < 0 || index > size)
             throw new IndexOutOfBoundsException();
-        if(size +1 == elementData.length)
+        if(size() +1 == elementData.length)
             expandArray();
-        System.arraycopy(elementData, index, elementData, index + 1, size - index);
-        elementData[index] = element;
+        Object[] data = elementData;
+        Object[] cache = new Object[size() - index];
+        int x = 0;
+        for(int i = index; i < size; i++) {
+            cache[x++] = data[i];
+        }
+        data[index] = element;
+        System.out.println("After index is replaced");
+        for(Object o : data)
+            System.out.println(o);
+        System.out.println(size());
+        x = 0;
+        for(int i = index+1; i < size()+1; i++) {
+            data[i] = cache[x++];
+        }
+        System.out.println("After cache is added on");
+        for(Object o : data)
+            System.out.println(o);
+        clear();
+        for(Object o : data)
+            add((E) o);
     }
 
     public boolean addAll(Collection<? extends E> c) {
@@ -190,7 +209,7 @@ public class SamsArrayList<E> extends AbstractList<E> implements List<E>, Random
         boolean b = false;
         for(int i = 0; i < size(); i++) {
             if(c.contains(elementData[i])) {
-                fastRemove(i);
+                fastRemove(i--);
                 b = true;
             }
         }
@@ -201,7 +220,7 @@ public class SamsArrayList<E> extends AbstractList<E> implements List<E>, Random
         boolean b = false;
         for(int i = 0; i < size(); i++) {
             if(!c.contains(elementData[i])) {
-                fastRemove(i);
+                fastRemove(i--);
                 b = true;
             }
         }
